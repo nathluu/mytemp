@@ -11,7 +11,7 @@
   <artifactId>pulsar-spark-connector_2.11</artifactId>
   <name>StreamNative :: Pulsar Spark Connector</name>
   <version>2.4.6-SNAPSHOT</version>
-  <url>http://pulsar.apache.org</url>
+  <url>https://pulsar.apache.org</url>
   <issueManagement>
     <system>Github</system>
     <url>https://github.com/streamnative/pulsar-spark/issues</url>
@@ -26,30 +26,18 @@
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
   <scm>
     <connection>scm:git:https://github.com/streamnative/pulsar-spark.git</connection>
     <developerConnection>scm:git:https://github.com/streamnative/pulsar-spark.git</developerConnection>
-    <tag>branch-2.4.0</tag>
+    <tag>branch-2.4.6</tag>
     <url>https://github.com/streamnative/pulsar-spark</url>
   </scm>
   <build>
     <plugins>
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven-compiler-plugin.version}</version>
@@ -97,10 +85,28 @@
         </configuration>
       </plugin>
       <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>${maven-source-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
         <version>${scala-maven-plugin.version}</version>
         <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>doc-jar</goal>
+            </goals>
+          </execution>
           <execution>
             <id>eclipse-add-source</id>
             <goals>
@@ -247,6 +253,44 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <gpgArguments>
+                <arg>--pinentry-mode</arg>
+                <arg>loopback</arg>
+              </gpgArguments>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>${nexus-staging-maven-plugin.version}</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>ossrh</serverId>
+              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <repositories>
     <repository>
       <id>central</id>
@@ -266,9 +310,63 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>io.airlift</groupId>
+      <artifactId>aircompressor</artifactId>
+      <version>0.16</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>3.11.4</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java-util</artifactId>
+      <version>3.11.4</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.errorprone</groupId>
+      <artifactId>error_prone_annotations</artifactId>
+      <version>2.3.4</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.8.6</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>1.7.25</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.jcip</groupId>
+      <artifactId>jcip-annotations</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>2.1.6</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>2.3.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+      <version>1.2.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -286,45 +384,52 @@
     <dependency>
       <groupId>org.checkerframework</groupId>
       <artifactId>checker-qual</artifactId>
-      <version>2.0.0</version>
+      <version>3.5.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>animal-sniffer-annotations</artifactId>
-      <version>1.14</version>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>16.0.1</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
   <distributionManagement>
     <repository>
-      <id>streamnative</id>
-      <url>https://api.bintray.com/maven/streamnative/maven/io.streamnative.pulsar-spark/;publish=1</url>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
   </distributionManagement>
   <properties>
-    <license-maven-plugin.version>3.0.rc1</license-maven-plugin.version>
+    <license-maven-plugin.version>3.0</license-maven-plugin.version>
     <maven.version>3.5.4</maven.version>
-    <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-    <spark.version>2.4.2</spark.version>
-    <scala-maven-plugin.version>4.0.2</scala-maven-plugin.version>
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <spark.version>2.4.5</spark.version>
+    <scala-maven-plugin.version>4.4.1</scala-maven-plugin.version>
     <scala.version>2.11.12</scala.version>
     <testRetryCount>2</testRetryCount>
-    <scalatest-maven-plugin.version>2.0.0</scalatest-maven-plugin.version>
-    <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
-    <pulsar.version>2.4.2</pulsar.version>
-    <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
+    <scalatest-maven-plugin.version>2.0.2</scalatest-maven-plugin.version>
+    <maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
+    <pulsar.version>2.7.2</pulsar.version>
+    <maven-source-plugin.version>3.2.0</maven-source-plugin.version>
     <javac.target>1.8</javac.target>
     <scala.binary.version>2.11</scala.binary.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven-shade-plugin.version>3.1.0</maven-shade-plugin.version>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
     <scalatest.version>3.0.3</scalatest.version>
-    <maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
+    <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
+    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <streamnative-tests.version>2.4.2</streamnative-tests.version>
+    <project.build.outputTimestamp>1</project.build.outputTimestamp>
     <project.scm.id>snbot-github</project.scm.id>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <testcontainers.version>1.10.6</testcontainers.version>
     <redirectTestOutputToFile>true</redirectTestOutputToFile>
   </properties>
 </project>
-
